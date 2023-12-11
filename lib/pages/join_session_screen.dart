@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:movies/utils/http_helper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:movies/pages/SelectMovieScreen.dart';
+import 'package:movies/pages/select_movie_screen.dart';
 
 class JoinSession extends StatefulWidget {
   const JoinSession({super.key});
@@ -14,6 +15,7 @@ class JoinSession extends StatefulWidget {
 class _JoinSessionState extends State<JoinSession> {
   final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
+  static bool kDebugMode = !kReleaseMode && !kProfileMode;
 
   void _submitCode() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -33,12 +35,13 @@ class _JoinSessionState extends State<JoinSession> {
         // Join session
         final data =
             await HttpHelper.joinSession(deviceId, int.parse(_controller.text));
-
+        // ignore: use_build_context_synchronously
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const SelectMovieScreen()),
         );
       } catch (error) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to join session, try again.'),
@@ -46,7 +49,9 @@ class _JoinSessionState extends State<JoinSession> {
         );
       }
     } else {
-      print('Device ID is null');
+      if (kDebugMode) {
+        print('Device ID is null');
+      }
     }
   }
 

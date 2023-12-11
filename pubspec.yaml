@@ -57,6 +57,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/placeholder.png
+
+  fonts:
+  - family: RussoOne
+    fonts:
+      - asset: assets/fonts/RussoOne-Regular.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

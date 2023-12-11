@@ -30,20 +30,43 @@ class HttpHelper {
     }
   }
 
-  static Future<Map<String, dynamic>> startSession(String deviceId) async {
-    final response = await http.get(
-      Uri.parse(
-          'https://movie-night-api.onrender.com/start-session?device_id=$deviceId'),
-    );
+  static Future<Map<String, dynamic>> startOrJoinSession(String deviceId,
+      [int? code]) async {
+    Map<String, dynamic>? data = null;
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      await writeSessionId(data['data']['session_id']);
-
-      return data;
-    } else {
-      throw Exception('Failed to start session');
+    if (code != null) {
+      try {
+        data = await joinSession(deviceId, code);
+      } catch (e) {
+        print('Failed to join session: $e');
+      }
     }
+
+    if (data == null) {
+      final response = await http.get(
+        Uri.parse(
+            'https://movie-night-api.onrender.com/start-session?device_id=$deviceId'),
+      );
+
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        if (data != null &&
+            data['data'] != null &&
+            data['data']['session_id'] != null) {
+          await writeSessionId(data['data']['session_id']);
+        } else {
+          throw Exception('Invalid response format');
+        }
+      } else {
+        throw Exception('Failed to start session');
+      }
+    }
+
+    if (data == null) {
+      throw Exception('Failed to start or join session');
+    }
+
+    return data;
   }
 
   static Future<Map<String, dynamic>> joinSession(
@@ -54,7 +77,9 @@ class HttpHelper {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final data = json.decode(response.body);
+      await writeSessionId(data['data']['session_id']);
+      return data;
     } else {
       throw Exception('Failed to join session: ${response.statusCode}');
     }

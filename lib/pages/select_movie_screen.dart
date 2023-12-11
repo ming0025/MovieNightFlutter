@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:movies/utils/http_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class SelectMovieScreen extends StatefulWidget {
   const SelectMovieScreen({super.key});
@@ -13,6 +12,7 @@ class SelectMovieScreen extends StatefulWidget {
 class _SelectMovieScreenState extends State<SelectMovieScreen> {
   List<Map<String, dynamic>> movies = [];
   int currentIndex = 0;
+  static bool kDebugMode = !kReleaseMode && !kProfileMode;
 
   @override
   void initState() {
@@ -23,7 +23,9 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
 
   Future<void> printSessionId() async {
     final sessionId = await HttpHelper.readSessionId();
-    print('Session ID: $sessionId');
+    if (kDebugMode) {
+      print('Session ID: $sessionId');
+    }
   }
 
   Future<void> fetchMovies() async {
@@ -52,8 +54,13 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
       if (data['data'] == null || data['data']['match'] == null) {
         throw Exception('Response from server does not include a match field');
       }
-      print(data['data']['match']);
+
+      if (kDebugMode) {
+        print(data['data']['match']);
+      }
+
       if (data['data']['match']) {
+        // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -63,7 +70,9 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.network(
-                    'https://image.tmdb.org/t/p/w500$moviePosterPath',
+                    moviePosterPath != null && moviePosterPath.isNotEmpty
+                        ? 'https://image.tmdb.org/t/p/w500$moviePosterPath'
+                        : 'assets/images/placeholder.png',
                     width: 200.0,
                     height: 300.0,
                   ),
@@ -84,12 +93,13 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
         );
       }
     } catch (error) {
-      print('Failed to vote movie: $error');
+      if (kDebugMode) {
+        print('Failed to vote movie: $error');
+      }
     }
 
     setState(() {
       currentIndex++;
-      print('Number of movies: ${movies.length}');
     });
 
     if (currentIndex == movies.length - 1) {
@@ -147,8 +157,12 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(15.0),
-                    child: Image.network(
-                      'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/placeholder.png',
+                      image: movie['poster_path'] != null &&
+                              movie['poster_path'].isNotEmpty
+                          ? 'https://image.tmdb.org/t/p/w500${movie['poster_path']}'
+                          : 'assets/images/placeholder.png',
                       fit: BoxFit.cover,
                     ),
                   ),

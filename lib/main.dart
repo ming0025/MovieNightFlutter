@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movies/pages/WelcomeScreen.dart';
+import 'package:movies/pages/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +16,10 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.teal[100],
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.deepPurple,
+          titleTextStyle: TextStyle(
+            fontFamily: 'RussoOne',
+            fontSize: 26.0,
+          ),
         ),
         primarySwatch: Colors.deepPurple,
         colorScheme: ThemeData().colorScheme.copyWith(
@@ -38,7 +42,7 @@ class MyApp extends StatelessWidget {
           textTheme: ButtonTextTheme.primary,
         ),
       ),
-      home: const WelcomeScreen(),
+      home: SplashScreen(),
     );
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:movies/utils/http_helper.dart';
-import 'package:movies/pages/SelectMovieScreen.dart';
+import 'package:movies/pages/select_movie_screen.dart';
 
 class StartSession extends StatefulWidget {
   const StartSession({super.key});
@@ -17,13 +18,14 @@ class _StartSessionState extends State<StartSession> {
   @override
   void initState() {
     super.initState();
-    startSession();
+    startOrJoinSession();
   }
 
-  Future<void> startSession() async {
+  Future<void> startOrJoinSession([int? sessionCode]) async {
     try {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       String? deviceId;
+      bool kDebugMode = !kReleaseMode && !kProfileMode;
 
       // Checking if platform is Android or iOS
       if (Platform.isAndroid) {
@@ -33,19 +35,23 @@ class _StartSessionState extends State<StartSession> {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
         deviceId = iosInfo.identifierForVendor;
       }
-      // Create session
+      // Create or join session
       if (deviceId != null) {
-        var data = await HttpHelper.startSession(deviceId);
+        var data = await HttpHelper.startOrJoinSession(deviceId, sessionCode);
 
         setState(() {
           code = data['data']['code'];
         });
-        print(data['data']['session_id']);
+        if (kDebugMode) {
+          print(data['data']['session_id']);
+        }
       } else {
         throw Exception('Failed to obtain device ID');
       }
     } catch (error) {
-      print(error);
+      if (kDebugMode) {
+        print(error);
+      }
     }
   }
 

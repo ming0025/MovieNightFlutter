@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movies/pages/StartSessionScreen.dart';
-import 'package:movies/pages/JoinSessionScreen.dart';
+import 'package:movies/pages/start_session_screen.dart';
+import 'package:movies/pages/join_session_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
