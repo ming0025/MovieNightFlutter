@@ -44,8 +44,7 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
     });
   }
 
-  Future<void> voteMovie(bool vote, String movieTitle, String moviePosterPath,
-      String movieDescription) async {
+  Future<void> voteMovie(bool vote) async {
     var movieId = movies[currentIndex]['id'];
 
     try {
@@ -60,14 +59,18 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
         print('movieId: $movieId');
       }
 
-      if (data['data']['match'] &&
-          data['data']['movie_id'] == data['data']['submitted_movie']) {
+      if (data['data']['match']) {
+        final movieId = int.parse(data['data']['movie_id']);
+        final movieData = await HttpHelper.fetchMovie(movieId);
+        var movieTitle = movieData['title'];
+        var moviePosterPath = movieData['poster_path'];
+        var movieDescription = movieData['overview'];
         // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           // Show the modal when the movie matches
           builder: (context) => AlertDialog(
-            title: Text('Movie match: $movieTitle'),
+            title: Text('Movie Match: $movieTitle'),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -134,11 +137,9 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
             key: Key(movie['id'].toString()),
             onDismissed: (direction) {
               if (direction == DismissDirection.endToStart) {
-                voteMovie(false, movie['title'], movie['poster_path'],
-                    movie['overview']);
+                voteMovie(false);
               } else if (direction == DismissDirection.startToEnd) {
-                voteMovie(true, movie['title'], movie['poster_path'],
-                    movie['overview']);
+                voteMovie(true);
               }
             },
             background: Container(

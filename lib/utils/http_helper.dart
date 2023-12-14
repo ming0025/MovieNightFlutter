@@ -130,4 +130,18 @@ class HttpHelper {
       return [];
     }
   }
+
+  static Future<Map<String, dynamic>> fetchMovie(int movieId) async {
+    const apiKey = '70c3d0c62aaefffac0005625f1c2de14';
+    final url = 'https://api.themoviedb.org/3/movie/$movieId?api_key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      final data = json.decode(response.body);
+      return data;
+    } catch (error) {
+      print('Failed to fetch movie: $error');
+      return {};
+    }
+  }
 }
