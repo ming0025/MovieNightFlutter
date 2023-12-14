@@ -44,15 +44,15 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
     });
   }
 
-  Future<void> voteMovie(bool liked, String movieTitle, String moviePosterPath,
+  Future<void> voteMovie(bool vote, String movieTitle, String moviePosterPath,
       String movieDescription) async {
     final movieId = movies[currentIndex]['id'];
 
     try {
-      final data = await HttpHelper.voteMovie(movieId, liked);
+      final data = await HttpHelper.voteMovie(movieId, vote);
 
       if (data['data'] == null || data['data']['match'] == null) {
-        throw Exception('Response from server does not include a match field');
+        throw Exception('Error: no data');
       }
 
       if (kDebugMode) {
@@ -63,6 +63,7 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
         // ignore: use_build_context_synchronously
         showDialog(
           context: context,
+          // Show the modal when the movie matches
           builder: (context) => AlertDialog(
             title: Text('Movie match: $movieTitle'),
             content: SingleChildScrollView(
@@ -70,7 +71,7 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.network(
-                    moviePosterPath != null && moviePosterPath.isNotEmpty
+                    moviePosterPath.isNotEmpty
                         ? 'https://image.tmdb.org/t/p/w500$moviePosterPath'
                         : 'assets/images/placeholder.png',
                     width: 200.0,

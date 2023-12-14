@@ -26,14 +26,16 @@ class HttpHelper {
       final jsonData = jsonDecode(contents);
       return jsonData['sessionId'];
     } catch (error) {
+      // ignore: null_argument_to_non_null_type
       return Future.value(null);
     }
   }
 
-  static Future<Map<String, dynamic>> startOrJoinSession(String deviceId,
+  static Future<Map<String, dynamic>> startSession(String deviceId,
       [int? code]) async {
     Map<String, dynamic>? data = null;
 
+    // Join the session if a code is provided
     if (code != null) {
       try {
         data = await joinSession(deviceId, code);
@@ -42,6 +44,7 @@ class HttpHelper {
       }
     }
 
+    // Start a new session if code is not provided
     if (data == null) {
       final response = await http.get(
         Uri.parse(
@@ -62,6 +65,7 @@ class HttpHelper {
       }
     }
 
+    // ignore: unnecessary_null_comparison
     if (data == null) {
       throw Exception('Failed to start or join session');
     }
@@ -86,12 +90,12 @@ class HttpHelper {
   }
 
   static Future<Map<String, dynamic>> voteMovie(int movieId, bool liked) async {
+    // ignore: unnecessary_null_comparison
     if (liked == null) {
       throw ArgumentError('liked must not be null');
     }
 
     final sessionId = await readSessionId();
-    const deviceId = 'device_id';
 
     final url = Uri.https('movie-night-api.onrender.com', '/vote-movie', {
       'session_id': sessionId,

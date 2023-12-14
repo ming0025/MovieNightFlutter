@@ -18,10 +18,10 @@ class _StartSessionState extends State<StartSession> {
   @override
   void initState() {
     super.initState();
-    startOrJoinSession();
+    startSession();
   }
 
-  Future<void> startOrJoinSession([int? sessionCode]) async {
+  Future<void> startSession([int? sessionCode]) async {
     try {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       String? deviceId;
@@ -35,9 +35,9 @@ class _StartSessionState extends State<StartSession> {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
         deviceId = iosInfo.identifierForVendor;
       }
-      // Create or join session
+      // Start session
       if (deviceId != null) {
-        var data = await HttpHelper.startOrJoinSession(deviceId, sessionCode);
+        var data = await HttpHelper.startSession(deviceId, sessionCode);
 
         setState(() {
           code = data['data']['code'];

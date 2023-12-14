@@ -13,11 +13,11 @@ class JoinSession extends StatefulWidget {
 }
 
 class _JoinSessionState extends State<JoinSession> {
-  final _formKey = GlobalKey<FormState>();
-  final _controller = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final controller = TextEditingController();
   static bool kDebugMode = !kReleaseMode && !kProfileMode;
 
-  void _submitCode() async {
+  void submitCode() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     String? deviceId;
 
@@ -33,8 +33,7 @@ class _JoinSessionState extends State<JoinSession> {
     if (deviceId != null) {
       try {
         // Join session
-        final data =
-            await HttpHelper.joinSession(deviceId, int.parse(_controller.text));
+        await HttpHelper.joinSession(deviceId, int.parse(controller.text));
         // ignore: use_build_context_synchronously
         Navigator.push(
           context,
@@ -63,14 +62,14 @@ class _JoinSessionState extends State<JoinSession> {
       ),
       body: Center(
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  controller: _controller,
+                  controller: controller,
                   keyboardType: TextInputType.number,
                   maxLength: 4,
                   decoration: const InputDecoration(
@@ -92,8 +91,8 @@ class _JoinSessionState extends State<JoinSession> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _submitCode();
+                  if (formKey.currentState!.validate()) {
+                    submitCode();
                   }
                 },
                 child: const Text('Submit'),
