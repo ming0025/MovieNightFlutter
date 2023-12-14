@@ -46,7 +46,7 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
 
   Future<void> voteMovie(bool vote, String movieTitle, String moviePosterPath,
       String movieDescription) async {
-    final movieId = movies[currentIndex]['id'];
+    var movieId = movies[currentIndex]['id'];
 
     try {
       final data = await HttpHelper.voteMovie(movieId, vote);
@@ -56,10 +56,12 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
       }
 
       if (kDebugMode) {
-        print(data['data']['match']);
+        print(data);
+        print('movieId: $movieId');
       }
 
-      if (data['data']['match']) {
+      if (data['data']['match'] &&
+          data['data']['movie_id'] == data['data']['submitted_movie']) {
         // ignore: use_build_context_synchronously
         showDialog(
           context: context,
@@ -106,6 +108,8 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
     if (currentIndex == movies.length - 1) {
       await fetchMoreMovies();
     }
+
+    movieId = null;
   }
 
   @override
