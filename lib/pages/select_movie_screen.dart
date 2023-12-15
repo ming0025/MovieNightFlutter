@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movies/utils/http_helper.dart';
 import 'package:flutter/foundation.dart';
+import 'package:movies/pages/welcome_screen.dart';
 
 class SelectMovieScreen extends StatefulWidget {
   const SelectMovieScreen({super.key});
@@ -90,7 +91,10 @@ class _SelectMovieScreenState extends State<SelectMovieScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  );
                 },
                 child: const Text('OK'),
               ),
